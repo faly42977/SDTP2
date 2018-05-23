@@ -18,7 +18,9 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.errors.TopicExistsException;
 
 import kafka.admin.AdminUtils;
-import kafka.utils.*;
+import kafka.admin.RackAwareMode;
+import kafka.utils.ZKStringSerializer$;
+import kafka.utils.ZkUtils;
 
 
 public class ServiceDiscoveryKafka 	 {
@@ -49,8 +51,10 @@ public class ServiceDiscoveryKafka 	 {
 
 
 			Properties topicConfig = new Properties();
-			AdminUtils.createTopic(zkUtils, "ola", 1,REPLICATION_FACTOR, topicConfig, null );
-	
+
+			if(!AdminUtils.topicExists(zkUtils, topic))
+			AdminUtils. createTopic(zkUtils, topic, 1, REPLICATION_FACTOR, topicConfig, RackAwareMode.Disabled$.MODULE$);
+			
 		} catch( TopicExistsException e ) {		
 			System.err.println("Topic already exists...");
 		}
@@ -108,22 +112,11 @@ public class ServiceDiscoveryKafka 	 {
 
 		}
 
-		records = consumer.poll(TIMEOUT);
-		records.forEach(r -> {
-
-			list.add(r.value());
-		});
-
-		consumer.subscribe(Arrays.asList(topic));
 		records = consumer. poll(TIMEOUT);
 		records.forEach(r -> {
 			list.add(r.value());
 		});
 
-		//Print lista
-		for (String i : list) {
-			System.out.println(i  +"<-");
-		}
 
 		return list;
 	}
@@ -149,12 +142,13 @@ public class ServiceDiscoveryKafka 	 {
 
 				Logger.getAnonymousLogger().log(Level.INFO, "Ligado ao Kafka; Dando inicio ao envio de eventos...");
 				producer = new KafkaProducer<>(props);
+				
 			}
 			//publica eventos, cujo tópico (string) toma alternadamente o valor de: topic0 e topic1.
-			producer.send(new ProducerRecord<String, String>("url:", url));
+			producer.send(new ProducerRecord<String, String>(topic, url));
 
 		}catch(Exception e) {
-
+			System.out.println("ERRRRRROR");
 		}
 	}
 }

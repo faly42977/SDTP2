@@ -23,7 +23,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 import api.storage.Datanode;
 import api.storage.Namenode;
 import utils.IP;
-import utils.ServiceDiscovery;
+import utils.ServiceDiscoveryMultiCast;
 
 public class NamenodeRest implements Namenode {
 
@@ -44,7 +44,7 @@ public class NamenodeRest implements Namenode {
 		Thread dataNodeDiscovery = new Thread() {
 			public void run() {
 				while(true) {
-					String[] datanodeNames = ServiceDiscovery.multicastSend(ServiceDiscovery.DATANODE_SERVICE_NAME);
+					String[] datanodeNames = ServiceDiscoveryMultiCast.multicastSend(ServiceDiscoveryMultiCast.DATANODE_SERVICE_NAME);
 					if(datanodeNames != null) {
 						for(String datanode: datanodeNames) {
 							if(!datanodes.containsKey(datanode)) {
@@ -146,7 +146,7 @@ public class NamenodeRest implements Namenode {
 		JdkHttpServerFactory.createHttpServer(URI.create(URI_BASE), config);
 
 		System.err.println("Namenode ready....");
-		ServiceDiscovery.multicastReceive(ServiceDiscovery.NAMENODE_SERVICE_NAME, myAddress+"/");
+		ServiceDiscoveryMultiCast.multicastReceive(ServiceDiscoveryMultiCast.NAMENODE_SERVICE_NAME, myAddress+"/");
 	}
 
 }

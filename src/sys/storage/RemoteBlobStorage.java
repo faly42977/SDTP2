@@ -11,7 +11,7 @@ import api.storage.Namenode;
 import sys.storage.io.BufferedBlobReader;
 import sys.storage.io.BufferedBlobWriter;
 import utils.MapReduceCommon;
-import utils.ServiceDiscovery;
+import utils.ServiceDiscoveryMultiCast;
 
 public class RemoteBlobStorage implements BlobStorage {
 	private static final int BLOCK_SIZE = 512;
@@ -26,7 +26,7 @@ public class RemoteBlobStorage implements BlobStorage {
 		Thread dataNodeDiscovery = new Thread() {
 			public void run() {
 				while(true) {
-					String[] datanodeNames = ServiceDiscovery.multicastSend(ServiceDiscovery.DATANODE_SERVICE_NAME);
+					String[] datanodeNames = ServiceDiscoveryMultiCast.multicastSend(ServiceDiscoveryMultiCast.DATANODE_SERVICE_NAME);
 					if(datanodeNames != null) {
 						for(String datanode: datanodeNames) {
 							if(!datanodes.containsKey(datanode)) {
@@ -46,7 +46,7 @@ public class RemoteBlobStorage implements BlobStorage {
 		dataNodeDiscovery.start();
 
 		while(true) {
-			String[] namenodename = ServiceDiscovery.multicastSend(ServiceDiscovery.NAMENODE_SERVICE_NAME);
+			String[] namenodename = ServiceDiscoveryMultiCast.multicastSend(ServiceDiscoveryMultiCast.NAMENODE_SERVICE_NAME);
 			if(namenodename != null) {
 				logger.info("Namenode discovered: " + namenodename[0]);
 				this.namenode = new NamenodeClient(namenodename[0]);

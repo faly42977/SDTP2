@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 import api.storage.Datanode;
 
-public class ServiceDiscovery {
+public class ServiceDiscoveryMultiCast	 {
 
 	public final static String DATANODE_SERVICE_NAME = "Datanode";
 	public final static String NAMENODE_SERVICE_NAME = "Namenode";

@@ -15,7 +15,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 
 import api.storage.Datanode;
 import utils.IP;
-import utils.ServiceDiscovery;
+import utils.ServiceDiscoveryMultiCast;
 
 public class DatanodeRest implements Datanode {
 
@@ -80,6 +80,6 @@ public class DatanodeRest implements Datanode {
 		JdkHttpServerFactory.createHttpServer(URI.create(URI_BASE), config);
 
 		System.err.println("Datanode ready....");
-		ServiceDiscovery.multicastReceive(ServiceDiscovery.DATANODE_SERVICE_NAME, myAddress+"/");
+		ServiceDiscoveryMultiCast.multicastReceive(ServiceDiscoveryMultiCast.DATANODE_SERVICE_NAME, myAddress+"/");
 	}
 }
