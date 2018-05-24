@@ -126,8 +126,10 @@ public class NamenodeRest implements Namenode {
 	@Override
 	public synchronized List<String> read(String name) {
 		List<String> blocks = names.get(name);
-		if (blocks == null)
+		if (blocks == null) {
 			logger.info("Namenode read NOT FOUND");
+			throw new WebApplicationException( Status.NOT_FOUND );
+		}
 		else
 			logger.info("Blocks for Blob: " + name + " : " + blocks);
 		return blocks;
