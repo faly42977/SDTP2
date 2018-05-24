@@ -11,7 +11,6 @@ import com.github.scribejava.core.model.Response;
 import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth20Service;
 
-import dropbox.msgs.CreateFileV2Args;
 import utils.JSON;
 
 public class DropboxClient{
@@ -54,6 +53,7 @@ public class DropboxClient{
 	private static final String CREATE_FILE_V2_URL = "https://content.dropboxapi.com/2/files/upload";
 	private static final String DELETE_V2_URL = "https://api.dropboxapi.com/2/files/delete_v2";
 	private static final String CREATE_DIR_V2_URL = "https://api.dropboxapi.com/2/files/create_folder";
+	private static final String GET_FILE_V2_URL = "https://content.dropboxapi.com/2/files/download";
 	protected static final String OCTETSTREAM_CONTENT_TYPE = "application/octet-stream";
 	protected static final String JSON_CONTENT_TYPE = "application/json";
 
@@ -111,7 +111,7 @@ public class DropboxClient{
 				throw new RuntimeException( r.getMessage() ) ;
 
 			}
-			System.out.println("File successfully created..." + r.getCode());
+			System.out.println("File successfully deleted..." + r.getCode());
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -143,6 +143,30 @@ public class DropboxClient{
 
 		}
 		return false;
+	}
+	
+	public static byte[] getFile(String path) {
+		OAuthRequest getFile = new OAuthRequest(Verb.POST, GET_FILE_V2_URL);
+		getFile.addHeader("Content-Type", OCTETSTREAM_CONTENT_TYPE);
+		getFile.addHeader(DROPBOX_API_ARG, JSON.encode(new Data(path)));
+		service.signRequest(accessToken, getFile);
+		Response r;
+		try {
+			r = service.execute(getFile);
+			if (r.getCode() != 200) {
+				System.out.println(r.getBody());
+				System.out.println(r.getCode());
+				throw new RuntimeException( r.getMessage() ) ;
+
+			}
+			System.out.println("Got file..." + r.getCode());
+			System.out.println(r.getBody().toString());
+			return r.getBody().getBytes();
+		} catch (Exception e) {
+			e.printStackTrace();
+
+		}
+		return null;
 	}
 }
 
