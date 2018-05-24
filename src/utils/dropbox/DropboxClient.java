@@ -33,6 +33,20 @@ public class DropboxClient{
 		}
 	}
 	
+	public static class CreateFile {
+		final String path;
+		final String mode;
+		final boolean autorename;
+		final boolean mute;
+		
+		public CreateFile(String path) {
+			this.path = path;
+			this.mode = "add";
+			this.autorename = false;
+			this.mute = false;
+		}
+		
+	}
 
 
 
@@ -56,7 +70,7 @@ public class DropboxClient{
 	public static boolean createFile(String path,byte[] contents) {
 		OAuthRequest createFile = new OAuthRequest(Verb.POST, CREATE_FILE_V2_URL);
 		createFile.addHeader("Content-Type", OCTETSTREAM_CONTENT_TYPE);
-		createFile.addHeader(DROPBOX_API_ARG, JSON.encode(new CreateFileV2Args(path)));
+		createFile.addHeader(DROPBOX_API_ARG, JSON.encode(new CreateFile(path)));
 
 		createFile.setPayload( contents );
 
